@@ -1,44 +1,62 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs')
+const sha256 = require('./melSHA256')
+const devices = require('./device_lookup');
 
 const buildImageSetForURL = async (instructions) => {
-    const {url, sizes, fileDestination} = instructions;
+    const {url, sizes, isFullScreen} = instructions; 
+    const hash = sha256.performSHA256(url).slice(0, 16);
+    const destinationDirectory = `./resources/images/${hash}`
+    if(!fs.existsSync(destinationDirectory)){
+        fs.mkdir(destinationDirectory, (err) => {
+            if (err) {
+                throw err;
+            }
+            console.log("Directory is created.");
+        });
+    };
+    
+    async function takePhoto(size){
+        const { width, height, device } = size;
+        const browser = await puppeteer.launch({
+            headless: true,
+            userDataDir: './datadir',
+            defaultViewport: {width: width, height: height}
+        });
+        const page = await browser.newPage();
+        await page.goto(url, { waitUntil: 'networkidle2' })
+                  .catch(err => console.log(err));
+        const hash = sha256.performSHA256(url).slice(0, 16);
+        const ds = new Date();
+        const tempName = ds.toString().slice(0, 21).replace(' ', '_').replace(':', '_');
+        let bundleToken = `${ds.getUTCFullYear()}${ds.getUTCMonth()}${ds.getUTCDate()}${ds.getUTCHours()}${ds.getUTCMinutes()}`;
+        await page.screenshot({
+            //make path images/hash/bundle_x/something.png
+            path: `./resources/images/${hash}/${bundleToken}_${device}.png`,
+            fullPage: isFullScreen
 
-    //map over sizes array to take images in new pages
-    const {width, height} = sizes[2];
+        }).catch( err => console.log('trouble writing file:' + err));
+        browser.close();
+    }
 
-    const browser = await puppeteer.launch({
-        userDataDir: './datadir',
-        headless: true,
-        defaultViewport: {width: width, height: height}
 
-        // args: [`--window-size${sizes[2].width},${sizes[2].height}`]
+    sizes.map( async (size) => {
+        return await takePhoto(size);
     });
-
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' })
-                    .catch(err => console.log(err));
-
-    const tempName = new Date().toString().slice(0, 21).replace(' ', '_').replace(':', '_');
-    await page.screenshot({
-        path: `./resources/images/${tempName}_${sizes[2].device}.png`,
-        fullPage: false
-    }).catch( err => console.log('trouble writing file:' + err));
-    //should build a data bundle for attributes not kept in file name
-    //to help contextualize more about the captures and results
-    browser.close();
 }
 
+//build to take a set of urls and a set of devices?
 buildImageSetForURL(
     {
-        url: 'https://ourcodeworld.com/articles/read/1187/how-to-open-a-url-in-google-chrome-with-a-specific-window-size-using-the-command-line-in-windows-10', 
-        sizes: [{ device: 'laptopscreen', width: 1920, height: 1080 },
-                { device: 'ipadAir', width: 820, height: 1180 },
-                { device: 'pixil5', width: 393, height: 851 }],
-        fileDestination: 'dest'
+        //generate urls off seo search results for keywords: for example, 10 most popular 'vr gaming' results
+        url: 'https://animejs.com/', 
+        sizes: devices.devicesAndSize(),
+        isFullScreen: false
     }
-    
-    
 );
+
+
+
+
 
 //build function to automate scrolling of page by small number of pixles at a time
