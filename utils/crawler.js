@@ -31,7 +31,7 @@ const buildImageSetForURL = async (instructions) => {
         const tempName = ds.toString().slice(0, 21).replace(' ', '_').replace(':', '_');
         let bundleToken = `${ds.getUTCFullYear()}${ds.getUTCMonth()}${ds.getUTCDate()}${ds.getUTCHours()}${ds.getUTCMinutes()}`;
         await page.screenshot({
-            //make path images/hash/bundle_x/something.png
+            //path and file naming are a work in progress.  
             path: `./resources/images/${hash}/${bundleToken}_${device}.png`,
             fullPage: isFullScreen
 
@@ -49,14 +49,25 @@ const buildImageSetForURL = async (instructions) => {
 buildImageSetForURL(
     {
         //generate urls off seo search results for keywords: for example, 10 most popular 'vr gaming' results
-        url: 'https://animejs.com/', 
+        url: 'https://www.dockethq.com/', 
         sizes: devices.devicesAndSize(),
         isFullScreen: false
     }
 );
 
+// const domTreeToBe = async (element) => {
+//     const browser = await puppeteer.launch({
+//         headless: true
+//     });
+//     const page = await browser.newPage();
+//     await page.goto('https://laracasts.com/', { waitUntil: 'networkidle2' });
 
+//     const getElement = await page.$$eval('body', divs => console.log({...divs}));
 
+//     console.log(getElement);
 
+// }
+
+// domTreeToBe('button');
 
 //build function to automate scrolling of page by small number of pixles at a time

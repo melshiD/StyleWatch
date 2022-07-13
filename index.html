@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getter function testground</title>
+    <!-- <link rel="stylesheet" href="./index.css">
+    <style>
+        button{
+            letter-spacing: 0.1rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 14px;
+            background-color: pink;
+            outline: none;
+        }
+    </style> -->
+    <script src="./utils/default_computed.js" ></script>
+</head>
+<body>
+    <p>We're just here to test some js</p>
+    <button id="btn" >
+        Push me!
+    </button>
+    <script>
+        // let element = document.getElementById('btn');
+        function getRawList(element){
+            let styles = getComputedStyle(element);
+            let organizedList = {};
+            for(let i = 0; i < styles.length; i ++){
+                let key = styles[i];
+                let value = styles[key];
+                organizedList[key] = value;
+            }
+            return organizedList;
+        }
+
+        let element = document.getElementById('btn');
+        let elementStyleList = getRawList(element);
+        let defaultStyleList = defaultCSSComputed();
+
+        // for( let key in elementStyleList){
+        //     let in1 = elementStyleList[key];
+        //     let in2 = defaultStyleList[key];
+        //     let same = in1 === in2?'true':'false';
+        //     console.log(`${in1}  ::  ${in2}  ::  ${same}`);
+        // }
+        let filtered = Object.keys(elementStyleList)
+                       .filter( key => {
+                            let in1 = elementStyleList[key];
+                            let in2 = defaultStyleList[key];
+                            console.log(`${in1}  ::  ${in2}`);
+                            return in1 === in2 ? null : in1 ;
+                            //why isn't returning an object the way I want working here?
+                            //try Object.entries(elementStyleList) next, but still why?
+                        });
+        console.log(filtered);
+        //compare plain/default list from a blank body to the one retreived and return filtered list
+        // let filteredList = keys(organizedList).filter( (ke))
+        
+    </script>
+</body>
+</html>
