@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs')
 const sha256 = require('./melSHA256')
 const devices = require('./device_lookup');
+// const args = process.argv;
 
 const buildImageSetForURL = async (instructions) => {
     const {url, sizes, isFullScreen} = instructions; 
@@ -49,9 +50,10 @@ const buildImageSetForURL = async (instructions) => {
 buildImageSetForURL(
     {
         //generate urls off seo search results for keywords: for example, 10 most popular 'vr gaming' results
-        url: 'https://www.dockethq.com/', 
+        url: 'https://glitch.com/', 
+        // url: args, 
         sizes: devices.devicesAndSize(),
-        isFullScreen: false
+        isFullScreen: true
     }
 );
 
