@@ -2,12 +2,13 @@ const puppeteer = require('puppeteer');
 const fs = require('fs')
 const sha256 = require('./melSHA256')
 const devices = require('./device_lookup');
-// const args = process.argv;
+const args = process.argv;
+
 
 const buildImageSetForURL = async (instructions) => {
     const {url, sizes, isFullScreen} = instructions; 
     const hash = sha256.performSHA256(url).slice(0, 16);
-    const destinationDirectory = `./resources/images/${hash}`
+    const destinationDirectory = `../resources/images/${hash}`
     if(!fs.existsSync(destinationDirectory)){
         fs.mkdir(destinationDirectory, (err) => {
             if (err) {
@@ -33,7 +34,7 @@ const buildImageSetForURL = async (instructions) => {
         let bundleToken = `${ds.getUTCFullYear()}${ds.getUTCMonth()}${ds.getUTCDate()}${ds.getUTCHours()}${ds.getUTCMinutes()}`;
         await page.screenshot({
             //path and file naming are a work in progress.  
-            path: `./resources/images/${hash}/${bundleToken}_${device}.png`,
+            path: `../resources/images/${hash}/${bundleToken}_${device}.png`,
             fullPage: isFullScreen
 
         }).catch( err => console.log('trouble writing file:' + err));
@@ -50,8 +51,7 @@ const buildImageSetForURL = async (instructions) => {
 buildImageSetForURL(
     {
         //generate urls off seo search results for keywords: for example, 10 most popular 'vr gaming' results
-        url: 'https://glitch.com/', 
-        // url: args, 
+        url: args[2], 
         sizes: devices.devicesAndSize(),
         isFullScreen: true
     }
